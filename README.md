@@ -19,7 +19,7 @@ My primary motivation for developing this software was to illustrate that data c
 
 My secondary motivation was to give the world a small sample of my capabilities, to advertise my availability for employment and contract work of a technical nature.  I don't work cheap, but I do quality work (as I hope you will agree).  If you are interested in hiring me, please contact:
 
-	peter_desimone@hotmail.com
+	peter_desimone at hotmail dot com
 
 
 
@@ -29,7 +29,7 @@ Donations are always appreciated, and may be sent to my bitcoin address:
 
 	1EExevPZkgjoRFEbQzTFLpAoyDpwAdeQXw
 
-If you send a donation, please also consider sending me an email (peter_desimone@hotmail.com) so I can thank you for your generosity.
+If you send a donation, please also consider sending me an email (peter_desimone at hotmail dot com) so I can thank you for your generosity.
 
 
 
