@@ -11,6 +11,16 @@
     government has erroneously claimed are exempt from such protections.  One relevant example of
     the latter is a technical drawing of a firearm that could allow a person to fabricate such a
     weapon using a 3D printer, or other CNC-type rapid prototyping equipment.
+ 
+ 
+    REVISION HISTORY
+
+    2019-07-05: Source filename is now embedded into music by lyrebird_compose, and automatically
+    extracted by lyrebird_decompose.  The only known issue with this feature is that if the source file
+    resides in another directory, its path information will be embedded along with the filename.  If
+    the computer decomposing the music has a different directory structure than the computer that composed
+    the music, this could cause a write error.  One solution would be to strip all path information from
+    the filename prior to embedding.
 */
 
 
@@ -21,6 +31,51 @@
 #include <math.h>
 
 #define STRING_BUFFER_SIZE      1000
+
+
+
+// replace all newline characters with null terminators
+void strip_newline(char *str)
+{
+    int i = 0;
+    for (i = 0; i < STRING_BUFFER_SIZE; i++)
+    {
+        if (str[i] == '\n' || str[i] == '\r') // if newline or carriage return
+            str[i] = '\0';
+    }
+}
+
+
+
+/* Copies the original source filename from the freshly-decomposed song.  Doesn't rewind the file,
+   so reading commences from after the filename, effectively stripping it out of the data stream.
+   Finally, copy the input file to a new file using the filename found within. */
+void get_filename_and_copy(FILE *infile, char *filename)
+{
+    
+    fgets(filename, STRING_BUFFER_SIZE, infile);
+    
+    strip_newline(filename); // make sure to remove any newline characters
+    
+    printf("Filename \"%s\" retrieved from music.\n", filename);
+    
+    FILE *outfile = fopen(filename, "wb");
+    
+    while (!feof(infile))
+    {
+        
+        unsigned char c = fgetc(infile);
+        if (feof(infile)) break;
+        
+        fputc(c, outfile);
+        
+    }
+    
+    // close both files
+    fclose(outfile);
+    fclose(infile);
+    
+}
 
 
 
@@ -91,19 +146,29 @@ int main(int argc, char *argv[])
         exit(1);
     }
     
-    char output_filename[] = "decomposed.file";
+    char temp_filename[] = "temp.dat";
     
-    // open the output file
-    FILE *outfile = fopen(output_filename, "wb");
+    // open the temp file
+    FILE *tempfile = fopen(temp_filename, "wb");
     
     // un-steganographize (??) the file...
-    music2bin(infile, outfile);
+    music2bin(infile, tempfile);
     
     fclose(infile);
-    fclose(outfile);
+    fclose(tempfile);
+    
+    // file has been un-steganographized... BUT, it still contains a filename within the data!
+    
+    //rewind(tempfile); // doesn't work because file is write-only
+    // open the temp file (for read access this time)
+    tempfile = fopen(temp_filename, "rb"); // rewinds it too
+    
+    char *output_filename = malloc(STRING_BUFFER_SIZE * sizeof(char));
+    get_filename_and_copy(tempfile, output_filename); //read from
     
     printf("%s written to disk.\n\n", output_filename);
-     
+    
+    free(output_filename);
     
     return 0;
     

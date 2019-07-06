@@ -11,6 +11,16 @@
     government has erroneously claimed are exempt from such protections.  One relevant example of
     the latter is a technical drawing of a firearm that could allow a person to fabricate such a
     weapon using a 3D printer, or other CNC-type rapid prototyping equipment.
+ 
+ 
+    REVISION HISTORY
+ 
+    2019-07-05: Source filename is now embedded into music by lyrebird_compose, and automatically
+    extracted by lyrebird_decompose.  The only known issue with this feature is that if the source file
+    resides in another directory, its path information will be embedded along with the filename.  If
+    the computer decomposing the music has a different directory structure than the computer that composed
+    the music, this could cause a write error.  One solution would be to strip all path information from
+    the filename prior to embedding.
 */
 
 
@@ -33,6 +43,36 @@ const char *bit_rep[16] = {
 void print_byte(uint8_t byte)
 {
     printf("%s%s", bit_rep[byte >> 4], bit_rep[byte & 0x0F]);
+}
+
+
+
+/* Creates a temporary file, writes the source filename to it, appends the rest of the source file, then
+   closes and reopens this temp file ~as~ the source file! */
+void prepend_filename(FILE *infile, char *filename)
+{
+    
+    FILE *outfile = fopen("temp.dat", "wb");
+    
+    fprintf(outfile, "%s\n", filename);
+    
+    while (!feof(infile))
+    {
+        
+        unsigned char c = fgetc(infile);
+        if (feof(infile)) break;
+        
+        fputc(c, outfile);
+        
+    }
+    
+    // close both files
+    fclose(outfile);
+    fclose(infile);
+    
+    // now here's the brilliant part, lol
+    infile = fopen("temp.dat", "rb");
+    
 }
 
 
@@ -180,6 +220,8 @@ int main(int argc, char *argv[])
         printf("    file %s not found!\n\n", argv[1]); // you fucking idiot
         exit(1);
     }
+    
+    prepend_filename(infile, argv[1]);
     
     char output_filename[] = "song.lyrebird.txt";
     
