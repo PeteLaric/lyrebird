@@ -14,6 +14,12 @@
  
  
     REVISION HISTORY
+ 
+    2019-07-11: Rewrote code to compose, decompose, and play .lyrebird files, such that notes are no longer
+    represented by numerical values range [0,3], but instead actual note names (A, C, E), with '.' acting as
+    a rest.  Functionally it makes no difference how the data is represented on disk, but I wanted to ensure
+    that anyone examining a .lyrebird file perceives the contents as music, and not merely a representation of
+    arbitrary data.  The new score format is human-readable and could be easily performed by a human musician.
 
     2019-07-05: Source filename is now embedded into music by lyrebird_compose, and automatically
     extracted by lyrebird_decompose.  The only known issue with this feature is that if the source file
@@ -94,6 +100,23 @@ unsigned char SATB_to_byte(int S, int A, int T, int B)
 }
 
 
+
+int note_to_num(unsigned char note)
+{
+    int num = 0; // default, if (note == '.')
+    
+    if (note == 'A')
+        num = 1;
+    else if (note == 'C')
+        num = 2;
+    else if (note == 'E')
+        num = 3;
+    
+    return num;
+}
+
+
+
 void music2bin(FILE *infile, FILE *outfile)
 {
     
@@ -106,11 +129,17 @@ void music2bin(FILE *infile, FILE *outfile)
         
         if (feof(infile)) break;
         
-        int S = 0,
-            A = 0,
-            T = 0,
-            B = 0;
-        sscanf(str, "%i %i %i %i", &S, &A, &T, &B);
+        unsigned char S_note = '.',
+                      A_note = '.',
+                      T_note = '.',
+                      B_note = '.';
+        
+        sscanf(str, "%c %c %c %c", &S_note, &A_note, &T_note, &B_note);
+        
+        int S = note_to_num(S_note),
+            A = note_to_num(A_note),
+            T = note_to_num(T_note),
+            B = note_to_num(B_note);
         
         printf("S:%i A:%i T:%i B:%i\n", S, A, T, B);
         

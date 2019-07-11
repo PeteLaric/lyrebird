@@ -15,6 +15,12 @@
  
     REVISION HISTORY
  
+    2019-07-11: Rewrote code to compose, decompose, and play .lyrebird files, such that notes are no longer
+    represented by numerical values range [0,3], but instead actual note names (A, C, E), with '.' acting as
+    a rest.  Functionally it makes no difference how the data is represented on disk, but I wanted to ensure
+    that anyone examining a .lyrebird file perceives the contents as music, and not merely a representation of
+    arbitrary data.  The new score format is human-readable and could be easily performed by a human musician.
+ 
     2019-07-05: Source filename is now embedded into music by lyrebird_compose, and automatically
     extracted by lyrebird_decompose.  The only known issue with this feature is that if the source file
     resides in another directory, its path information will be embedded along with the filename.  If
@@ -29,6 +35,8 @@
 #include <stdlib.h>
 #include <string.h>
 #include <math.h>
+
+#define STRING_BUFFER_SIZE      1000
 
 
 
@@ -137,6 +145,23 @@ int extract_bass_voice(unsigned char c)
 }
 
 
+
+unsigned char num_to_note(int num)
+{
+    char note = '.'; // default, if (num == 0)
+    
+    if (num == 1)
+        note = 'A';
+    else if (num == 2)
+        note = 'C';
+    else if (num == 3)
+        note = 'E';
+    
+    return note;
+}
+
+
+
 void encode_char(unsigned char c, char *str)
 {
     
@@ -149,29 +174,33 @@ void encode_char(unsigned char c, char *str)
     // extract chord components
     
     // soprano
-    int soprano_note = extract_soprano_voice(c);
+    int soprano_num = extract_soprano_voice(c);
+    unsigned char soprano_note = num_to_note(soprano_num);
     printf("soprano voice: ");
-    printf("%c: %i\n", soprano_note, soprano_note);
+    printf("%i: %c\n", soprano_num, soprano_note);
     
     // alto
-    int alto_note = extract_alto_voice(c);
+    int alto_num = extract_alto_voice(c);
+    unsigned char alto_note = num_to_note(alto_num);
     printf("alto voice: ");
-    printf("%c: %i\n", alto_note, alto_note);
+    printf("%i: %c\n", alto_num, alto_note);
     //sprintf(str, "%i ", alto_note, alto_note);
     
     // tenor
-    int tenor_note = extract_tenor_voice(c);
+    int tenor_num = extract_tenor_voice(c);
+    unsigned char tenor_note = num_to_note(tenor_num);
     printf("tenor voice: ");
-    printf("%c: %i\n", tenor_note, tenor_note);
+    printf("%i: %c\n", tenor_num, tenor_note);
     
     // bass
-    int bass_note = extract_bass_voice(c);
+    int bass_num = extract_bass_voice(c);
+    unsigned char bass_note = num_to_note(bass_num);
     printf("bass voice: ");
-    printf("%c: %i\n", bass_note, bass_note);
+    printf("%i: %c\n", bass_num, bass_note);
     
     printf("\n");
     
-    sprintf(str, "%i %i %i %i\n", soprano_note, alto_note, tenor_note, bass_note);
+    sprintf(str, "%c %c %c %c\n", soprano_note, alto_note, tenor_note, bass_note);
     
 }
 
@@ -179,7 +208,7 @@ void encode_char(unsigned char c, char *str)
 void bin2music(FILE *infile, FILE *outfile)
 {
     
-    char *str = malloc(100);
+    char *str = malloc(STRING_BUFFER_SIZE);
     
     while (!feof(infile))
     {

@@ -41,9 +41,9 @@ num_chords = length(chord_progression)
 input_filename = 'song.lyrebird.txt'
 output_filename = 'lyrebird_song.wav' % MATLAB can output WAV files
 %output_filename = 'lyrebird_song.ogg'  % or OGG files
-infile = fopen(input_filename)
-Score = fscanf(infile,'%d',[4,inf])' % read four columns of note information
-fclose(infile);
+
+Score = load_lyrebird_song(input_filename)
+
 [m, n] = size(Score)
 
 % % TEST (generates random score)
