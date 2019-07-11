@@ -7,6 +7,13 @@ http://www.PeteLaric.com
 
 
 
+VIDEOS
+
+Lyrebird musical steganography suite: demo
+https://youtu.be/lFGXv-U1yWI
+
+
+
 OVERVIEW
 
 Lyrebird is a musical steganography system that converts arbitrary data into listenable music, and vice-versa.  The goal of the project is to blur the line between artistic expression, which enjoys First Amendment protection against censorship, and other forms of speech that the U.S. government has erroneously claimed are exempt from such protections.  One relevant example of the latter is a technical drawing of a firearm that could allow a person to fabricate such a weapon using a 3D printer, or other CNC-type rapid prototyping equipment.
