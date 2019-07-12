@@ -11,6 +11,7 @@ clc
 num_tones = 88
 sample_rate = 8192
 seconds_per_blip = 0.20
+samples_per_blip = round(sample_rate * seconds_per_blip)
 track_amplitude = 0.24
 bass_fundamental_pitch = 25 %key of Am: 13, 25; key of C: 16,28
 fade_in_samples = 4; %10
@@ -30,7 +31,7 @@ blues_progression = [ 0 0 0 0 0 0 0 0 ...
                       0 0 0 0 0 0 0 0 ...
                       0 0 0 0 0 0 0 0 ];
 
-chord_progression = blues_progression
+chord_progression = 0 %blues_progression
 
 %chord_progression = round(rand(1,92) * 12) %random
                   
@@ -39,8 +40,8 @@ num_chords = length(chord_progression)
 
 % load song from file
 input_filename = 'song.lyrebird.txt'
-output_filename = 'lyrebird_song.wav' % MATLAB can output WAV files
-%output_filename = 'lyrebird_song.ogg'  % or OGG files
+%output_filename = 'lyrebird_song.wav' % MATLAB can output WAV files
+output_filename = 'lyrebird_song.ogg'  % or OGG files
 
 Score = load_lyrebird_song(input_filename)
 
@@ -58,12 +59,11 @@ tones = tones';
 % // pitch formula: f = 2 ^ (tone / 12) * 440
 frequencies = 2 .^ ((tones - 49) ./ 12) .* 440;
 
-%t = linspace(0, 1, sample_rate * seconds_per_blip); %time base
-t = linspace(0, seconds_per_blip, sample_rate * seconds_per_blip); %time base
+t = linspace(0, seconds_per_blip, samples_per_blip); %time base
 
 for i=1:m
     
-    i
+    fprintf('%i/%i\n', i, m);
     
     current_tones = Score(i, :);
     current_chord = chord_progression(mod(i, num_chords)+1);
