@@ -42,7 +42,7 @@ If you send a donation, please also consider sending me an email (peter_desimone
 
 INSTRUCTIONS
 
-Lyrebird is actually a suite of three independent programs:
+Lyrebird is actually a suite of five independent programs:
 
 
 1) lyrebird_compose
@@ -76,6 +76,18 @@ To use lyrebird_decompose, navigate to the enclosing directory within Terminal a
 	./lyrebird_decompose mysong.lyrebird
 
 where "mysong.lyrebird" is some song that you want to decode back into whatever data was used to create it.
+
+
+4) lyrebird_listen
+
+lyrebird_listen takes as input raw audio in .WAV format (or even compressed audio in .OGG format), and, using machine learning (ML) techniques, transcribes this audio directly into the binary data that was used to generate it in the first place.  Conceptually, it is similar to lyrebird_decompose, but whereas lyrebird_decompose works from .lyrebird score files, lyrebird_listen works from raw audio.  This means that it is now possible to disseminate audio copies of Lyrebird songs, which can subsequently be decoded into useful data.
+
+lyrebird_listen was written in MATLAB, so you'll need to have MATLAB installed in order to use it.
+
+
+5) lyrebird_learn
+
+lyrebird_learn is the program that trains the ML model to transcribe audio to data.  Because ML techniques were used (rather than hard-coding the transcription algorithm), it is possible to retrain the transcription algorithm for any arbitrary note mapping, instrument sounds, tempo, etc.  The training data is loaded from "exhaustive_bytes.wav" (a sequences of sounds corresponding to every possible data byte, from 00 to FF).  If the tempo, note mapping, instrument sound, etc. is altered, "exhaustive_bytes.wav" must be re-generated using the new scheme prior to retraining the model using lyrebird_learn.
 
 
 
